@@ -16,10 +16,15 @@ export const Header: React.FC = () => {
   )
 }
 
-const NavItem: React.FC<{ to: string }> = (props) => {
+interface Props {
+  to: string
+}
+
+// Navigation Link items.
+const NavItem: React.FC<Props> = ({to, children}) => {
   return (
-    <S.HeaderItem to={props.to} activeStyle={{ backgroundColor: "#1b4f90" }}>
-      {props.children}
+    <S.HeaderItem to={to} activeStyle={{ backgroundColor: "#1b4f90" }}>
+      {children}
     </S.HeaderItem>
   )
 }

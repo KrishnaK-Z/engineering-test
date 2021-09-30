@@ -4,13 +4,17 @@ import { RollInput } from "shared/models/roll"
 import { getHomeboardStudents } from "api/get-homeboard-students"
 import { getActivities } from "api/get-activities"
 import { saveActiveRoll } from "api/save-active-roll"
+import { sortItems, FieldName } from "shared/helpers/sort-files"
 
 interface Options {
   url: Endpoint
   initialLoadState?: LoadState
 }
+
 export function useApi<ReturnType = {}>({ url, initialLoadState = "loading" }: Options) {
-  const [state, dispatch] = useReducer(stateReducer<ReturnType>(), { data: undefined, loadState: initialLoadState, error: undefined })
+  const [state, dispatch] = useReducer(stateReducer<ReturnType>(), { data: undefined, loadState: initialLoadState, error: undefined });
+
+  // Initial call to load students data.
   const callApi = useCallback(
     async (params?: object) => {
       dispatch({ type: "loading" })
@@ -33,9 +37,15 @@ export function useApi<ReturnType = {}>({ url, initialLoadState = "loading" }: O
       }
     },
     [url]
-  )
+  );
 
-  return [callApi, state.data, state.loadState, state.error] as const
+  // Dispatch sorting action.
+  const sortStudentsData = useCallback((fieldName: FieldName) => {
+
+    fieldName !== undefined && dispatch({ type: "sort", fieldName });
+  }, [])
+
+  return [sortStudentsData, callApi, state.data, state.loadState, state.error] as const
 }
 
 /* use-api state reducer */
@@ -48,15 +58,24 @@ function stateReducer<T>() {
         return { ...state, loadState: "loaded", error: undefined, data: action.result }
       case "error":
         return { ...state, loadState: "error", error: action.error }
+      case "sort":
+        return {
+          ...state,
+          loadState: "loaded",
+          error: undefined,
+          data: {...state.data, students: sortItems(state.data?.students, action.fieldName)}
+        };
     }
   }
 }
+
 interface ReducerState<T> {
-  data: T | undefined
+  data: any | undefined
   loadState: LoadState
   error: ResponseError | undefined
 }
-type ReducerAction<T> = { type: "success"; result: T } | { type: "error"; error: ResponseError } | { type: "loading" }
+
+type ReducerAction<T> = { type: "success"; result: T } | { type: "error"; error: ResponseError } | { type: "loading" } | { type: "sort", fieldName: FieldName }
 
 /* use-api options interfaces */
 export type Endpoint = "get-homeboard-students" | "save-roll" | "get-activities"
