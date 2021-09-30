@@ -31,7 +31,8 @@ export const HomeBoardPage: React.FC = () => {
     }
 
     if (action === 'sort') {
-      void sortStudentsData(value)
+      const {sortOption, isAsecOrder} = value;
+      sortStudentsData(sortOption, isAsecOrder);
     }
   }, [sortStudentsData])
 
@@ -74,40 +75,52 @@ export const HomeBoardPage: React.FC = () => {
 
 type ToolbarAction = "roll" | "sort"
 interface ToolbarProps {
-  onItemClick: (action: ToolbarAction, value?: string) => void
+  onItemClick: (action: ToolbarAction, value?: any) => void
 }
 
 const Toolbar: React.FC<ToolbarProps> = ({ onItemClick }) => {
+  // Manage sorted by field state.
   const [sortOption, setSortOption] = useState("");
 
+  // Manage sorted order type.
+  const [isAsecOrder, setIsAsecOrder] = useState(true);
+
   // Handle the sort option change.
-  const handleChange = (event: any) => {
+  const handleSortFieldChange = (event: any) => {
     setSortOption(event.target.value);
   };
 
+  // Handle sort order change.
+  const handleSortOrder = () => {
+    setIsAsecOrder(value => !value);
+  }
+
   // Triggers on sort option change.
   useEffect(() => {
-    onItemClick("sort", sortOption);
-  }, [sortOption])
+    onItemClick("sort", { sortOption, isAsecOrder });
+  }, [sortOption, isAsecOrder])
 
   return (
     <S.ToolbarContainer>
-      <div onClick={() => onItemClick("sort")}>
+      <div>
         <Box style={{minWidth: 120}}>
           <FormControl fullWidth>
-            <InputLabel id="sort-name-select-label">Sort</InputLabel>
+            <InputLabel id="sort-name-select-label">Names</InputLabel>
             <Select
               labelId="sort-name-select-label"
               id="sort-name-select"
               value={sortOption}
               label="Names"
-              onChange={handleChange}
+              onChange={handleSortFieldChange}
             >
               <MenuItem value='first_name'>First Name</MenuItem>
               <MenuItem value='last_name'>Last Name</MenuItem>
             </Select>
           </FormControl>
         </Box>
+        <Button onClick={handleSortOrder}>
+          <FontAwesomeIcon icon="filter" />
+        </Button>
       </div>
       <div>Search</div>
       <S.Button onClick={() => onItemClick("roll")}>Start Roll</S.Button>

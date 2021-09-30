@@ -40,9 +40,9 @@ export function useApi<ReturnType = {}>({ url, initialLoadState = "loading" }: O
   );
 
   // Dispatch sorting action.
-  const sortStudentsData = useCallback((fieldName: FieldName) => {
+  const sortStudentsData = useCallback((fieldName: FieldName, isAsecOrder: boolean) => {
 
-    fieldName !== undefined && dispatch({ type: "sort", fieldName });
+    fieldName !== undefined && dispatch({ type: "sort", fieldName, isAsecOrder });
   }, [])
 
   return [sortStudentsData, callApi, state.data, state.loadState, state.error] as const
@@ -63,7 +63,7 @@ function stateReducer<T>() {
           ...state,
           loadState: "loaded",
           error: undefined,
-          data: {...state.data, students: sortItems(state.data?.students, action.fieldName)}
+          data: {...state.data, students: sortItems(state.data?.students, action.fieldName, action.isAsecOrder)}
         };
     }
   }
@@ -75,7 +75,8 @@ interface ReducerState<T> {
   error: ResponseError | undefined
 }
 
-type ReducerAction<T> = { type: "success"; result: T } | { type: "error"; error: ResponseError } | { type: "loading" } | { type: "sort", fieldName: FieldName }
+type ReducerAction<T> = { type: "success"; result: T } | { type: "error"; error: ResponseError }
+  | { type: "loading" } | { type: "sort", fieldName: FieldName, isAsecOrder: boolean }
 
 /* use-api options interfaces */
 export type Endpoint = "get-homeboard-students" | "save-roll" | "get-activities"
