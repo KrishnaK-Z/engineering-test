@@ -56,8 +56,8 @@ export const HomeBoardPage: React.FC = () => {
 
         {loadState === "loaded" && data?.students && (
           <>
-            {data.students.map((s: any) => (
-              <StudentListTile key={s.id} isRollMode={isRollMode} student={s} />
+            {data.students.map((student: any) => (
+              <StudentListTile key={student.id} isRollMode={isRollMode} student={student} />
             ))}
           </>
         )}

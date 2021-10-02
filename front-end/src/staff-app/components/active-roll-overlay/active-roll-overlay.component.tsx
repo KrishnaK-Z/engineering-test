@@ -1,8 +1,10 @@
-import React from "react"
+import React, { useCallback } from "react"
 import styled from "styled-components"
 import Button from "@material-ui/core/Button"
 import { BorderRadius, Spacing } from "shared/styles/styles"
 import { RollStateList } from "staff-app/components/roll-state/roll-state-list.component"
+import { useStudentRollContext } from "shared/context/StudentRoll/studentRollContext"
+import { useAppContext } from "shared/context/App/appContext"
 
 export type ActiveRollAction = "filter" | "exit"
 interface Props {
@@ -11,7 +13,20 @@ interface Props {
 }
 
 export const ActiveRollOverlay: React.FC<Props> = (props) => {
-  const { isActive, onItemClick } = props
+  const { isActive, onItemClick } = props;
+
+  // Get student data.
+  const {state: {data: studentData}} = useAppContext();
+
+  // Get Student-to-roll count data.
+  const {state: rollState} = useStudentRollContext();
+
+  // Get Roll Count.
+  const getRollStatCount = useCallback((rollName) => {
+    return rollState.student_roll_states.filter(({roll_state}) =>
+      roll_state === rollName
+    ).length;
+  }, [rollState])
 
   return (
     <S.Overlay isActive={isActive}>
@@ -20,10 +35,10 @@ export const ActiveRollOverlay: React.FC<Props> = (props) => {
         <div>
           <RollStateList
             stateList={[
-              { type: "all", count: 0 },
-              { type: "present", count: 0 },
-              { type: "late", count: 0 },
-              { type: "absent", count: 0 },
+              { type: "all", count: studentData?.students.length },
+              { type: "present", count: getRollStatCount('present') },
+              { type: "late", count: getRollStatCount('late') },
+              { type: "absent", count: getRollStatCount('absent') },
             ]}
           />
           <div style={{ marginTop: Spacing.u6 }}>
