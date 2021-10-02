@@ -5,6 +5,7 @@ import { BorderRadius, Spacing } from "shared/styles/styles"
 import { RollStateList } from "staff-app/components/roll-state/roll-state-list.component"
 import { useStudentRollContext } from "shared/context/StudentRoll/studentRollContext"
 import { useAppContext } from "shared/context/App/appContext"
+import { get, LocalStorageKey } from "shared/helpers/local-storage"
 
 export type ActiveRollAction = "filter" | "exit"
 interface Props {
@@ -17,6 +18,9 @@ export const ActiveRollOverlay: React.FC<Props> = (props) => {
 
   // Get student data.
   const {state: {data: studentData}} = useAppContext();
+
+  // Get students from the storage.
+  const studentsFromStorage: any = get(LocalStorageKey.students);
 
   // Get Student-to-roll count data.
   const {state: rollState} = useStudentRollContext();
@@ -35,7 +39,7 @@ export const ActiveRollOverlay: React.FC<Props> = (props) => {
         <div>
           <RollStateList
             stateList={[
-              { type: "all", count: studentData?.students.length || 0 },
+              { type: "all", count: studentsFromStorage?.length || 0 },
               { type: "present", count: getRollStatCount('present') },
               { type: "late", count: getRollStatCount('late') },
               { type: "absent", count: getRollStatCount('absent') },
