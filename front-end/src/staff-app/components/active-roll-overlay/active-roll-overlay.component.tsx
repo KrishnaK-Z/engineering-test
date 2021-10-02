@@ -35,7 +35,7 @@ export const ActiveRollOverlay: React.FC<Props> = (props) => {
         <div>
           <RollStateList
             stateList={[
-              { type: "all", count: studentData?.students.length },
+              { type: "all", count: studentData?.students.length || 0 },
               { type: "present", count: getRollStatCount('present') },
               { type: "late", count: getRollStatCount('late') },
               { type: "absent", count: getRollStatCount('absent') },

@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useMemo, useReducer } from "react";
+import React, { createContext, useContext, useReducer } from "react";
 import { studentRollReducer } from "shared/context/StudentRoll/studentRollReducer";
 import { Roll } from "shared/models/roll";
 import { StudentContext } from "shared/context/StudentRoll/studentRollContext.type"
@@ -8,10 +8,7 @@ const initialState: Roll = {
   id: 1,
   name: "roll",
   completed_at: new Date(),
-  student_roll_states: [{
-    student_id: 1,
-    roll_state: 'present'
-  }]
+  student_roll_states: []
 };
 
 // Create context to store attendance roll.
