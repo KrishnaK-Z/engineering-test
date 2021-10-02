@@ -2,19 +2,24 @@ import React from "react"
 import styled from "styled-components"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { RollStateIcon } from "staff-app/components/roll-state/roll-state-icon.component"
-import { Spacing, FontWeight } from "shared/styles/styles"
+import { FontWeight, Spacing } from "shared/styles/styles"
 import { RolllStateType } from "shared/models/roll"
+import { useAppContext } from "shared/context/App/appContext"
+import { useStudentRollContext } from "shared/context/StudentRoll/studentRollContext"
 
 interface Props {
   stateList: StateList[]
-  onItemClick?: (type: ItemType) => void
   size?: number
 }
-export const RollStateList: React.FC<Props> = ({ stateList, size = 14, onItemClick }) => {
+export const RollStateList: React.FC<Props> = ({ stateList, size = 14 }) => {
+  // Get data from the store.
+  const {dispatch} = useAppContext();
+  const {state: {student_roll_states}} = useStudentRollContext();
+
   const onClick = (type: ItemType) => {
-    if (onItemClick) {
-      onItemClick(type)
-    }
+    // Filter student ids with selected roll.
+    const studentIds = student_roll_states.filter(item => item.roll_state === type).map(item => item.student_id);
+    dispatch({type: "filter", filterItem: studentIds});
   }
 
   return (

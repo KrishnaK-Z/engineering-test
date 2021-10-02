@@ -1,16 +1,21 @@
-import { useReducer, useCallback } from "react"
-import { ApiResponse, ResponseError } from "shared/interfaces/http.interface"
+import { useCallback } from "react"
+import { ApiResponse } from "shared/interfaces/http.interface"
 import { RollInput } from "shared/models/roll"
 import { getHomeboardStudents } from "api/get-homeboard-students"
 import { getActivities } from "api/get-activities"
 import { saveActiveRoll } from "api/save-active-roll"
+import { FieldName } from "shared/helpers/sort-files"
+import { useAppContext } from "shared/context/App/appContext"
 
 interface Options {
   url: Endpoint
   initialLoadState?: LoadState
 }
-export function useApi<ReturnType = {}>({ url, initialLoadState = "loading" }: Options) {
-  const [state, dispatch] = useReducer(stateReducer<ReturnType>(), { data: undefined, loadState: initialLoadState, error: undefined })
+
+export function useApi<ReturnType = {}>({ url }: Options) {
+  const {state, dispatch} = useAppContext();
+
+  // Initial call to load students data.
   const callApi = useCallback(
     async (params?: object) => {
       dispatch({ type: "loading" })
@@ -33,30 +38,15 @@ export function useApi<ReturnType = {}>({ url, initialLoadState = "loading" }: O
       }
     },
     [url]
-  )
+  );
 
-  return [callApi, state.data, state.loadState, state.error] as const
-}
+  // Dispatch sorting action.
+  const sortStudentsData = useCallback((fieldName: FieldName, isAsecOrder: boolean) => {
+    fieldName !== undefined && dispatch({ type: "sort", fieldName, isAsecOrder });
+  }, [])
 
-/* use-api state reducer */
-function stateReducer<T>() {
-  return (state: ReducerState<T>, action: ReducerAction<T>): ReducerState<T> => {
-    switch (action.type) {
-      case "loading":
-        return { ...state, loadState: "loading", error: undefined }
-      case "success":
-        return { ...state, loadState: "loaded", error: undefined, data: action.result }
-      case "error":
-        return { ...state, loadState: "error", error: action.error }
-    }
-  }
+  return [sortStudentsData, callApi, state.data, state.loadState, state.error] as const
 }
-interface ReducerState<T> {
-  data: T | undefined
-  loadState: LoadState
-  error: ResponseError | undefined
-}
-type ReducerAction<T> = { type: "success"; result: T } | { type: "error"; error: ResponseError } | { type: "loading" }
 
 /* use-api options interfaces */
 export type Endpoint = "get-homeboard-students" | "save-roll" | "get-activities"
