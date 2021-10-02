@@ -14,6 +14,10 @@ import FormControl from '@material-ui/core/FormControl';
 import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import Box from '@material-ui/core/Box';
+import TextField from '@material-ui/core/TextField'
+import {debounce} from 'shared/helpers/debounce-utils';
+import { search } from "shared/helpers/search-utils"
+import { useAppContext } from "shared/context/App/appContext"
 
 export const HomeBoardPage: React.FC = () => {
   const [isRollMode, setIsRollMode] = useState(false)
@@ -79,6 +83,8 @@ interface ToolbarProps {
 }
 
 const Toolbar: React.FC<ToolbarProps> = ({ onItemClick }) => {
+  const {dispatch} = useAppContext();
+  
   // Manage sorted by field state.
   const [sortOption, setSortOption] = useState("");
 
@@ -94,6 +100,11 @@ const Toolbar: React.FC<ToolbarProps> = ({ onItemClick }) => {
   const handleSortOrder = () => {
     setIsAsecOrder(value => !value);
   }
+
+  // Handle search bar type handler.
+  const handleSearch = debounce((e: any) => {
+    dispatch({type: "search", searchResult: search(e.target.value)})
+  }, 1000);
 
   // Triggers on sort option change.
   useEffect(() => {
@@ -122,7 +133,11 @@ const Toolbar: React.FC<ToolbarProps> = ({ onItemClick }) => {
           <FontAwesomeIcon icon="filter" />
         </Button>
       </div>
-      <div>Search</div>
+      <div>
+        <TextField id="search-bar"
+                   onChange={(e) => handleSearch(e)}
+                   label="Search..." variant="outlined" />
+      </div>
       <S.Button onClick={() => onItemClick("roll")}>Start Roll</S.Button>
     </S.ToolbarContainer>
   )

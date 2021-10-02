@@ -18,6 +18,11 @@ export const appStateReducer = (state: any, action: ReducerAction) => {
       return {
         ...state,
         data: {...state.data, students: action.filterItem.length ? filteredData : studentsFromStorage}
+      };
+    case "search":
+      return {
+        ...state,
+        data: {...state.data, students: action.searchResult}
       }
     case "sort":
       return {
@@ -31,4 +36,4 @@ export const appStateReducer = (state: any, action: ReducerAction) => {
 
 type ReducerAction = { type: "success"; result: any } | { type: "error"; error: ResponseError }
   | { type: "loading" } | { type: "sort", fieldName: FieldName, isAsecOrder: boolean }
-  | {type: "filter", filterItem: any}
+  | {type: "filter", filterItem: any} | {type: "search", searchResult: any}
