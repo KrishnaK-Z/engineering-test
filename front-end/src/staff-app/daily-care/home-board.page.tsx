@@ -84,7 +84,7 @@ interface ToolbarProps {
 
 const Toolbar: React.FC<ToolbarProps> = ({ onItemClick }) => {
   const {dispatch} = useAppContext();
-  
+
   // Manage sorted by field state.
   const [sortOption, setSortOption] = useState("");
 
@@ -114,24 +114,26 @@ const Toolbar: React.FC<ToolbarProps> = ({ onItemClick }) => {
   return (
     <S.ToolbarContainer>
       <div>
-        <Box style={{minWidth: 120}}>
-          <FormControl fullWidth>
-            <InputLabel id="sort-name-select-label">Names</InputLabel>
-            <Select
-              labelId="sort-name-select-label"
-              id="sort-name-select"
-              value={sortOption}
-              label="Names"
-              onChange={handleSortFieldChange}
-            >
-              <MenuItem value='first_name'>First Name</MenuItem>
-              <MenuItem value='last_name'>Last Name</MenuItem>
-            </Select>
-          </FormControl>
-        </Box>
-        <Button onClick={handleSortOrder}>
-          <FontAwesomeIcon icon="filter" />
-        </Button>
+        <S.FilterContainer>
+          <Box style={{minWidth: 120}}>
+            <FormControl fullWidth>
+              <InputLabel id="sort-name-select-label">Names</InputLabel>
+              <Select
+                labelId="sort-name-select-label"
+                id="sort-name-select"
+                value={sortOption}
+                label="Names"
+                onChange={handleSortFieldChange}
+              >
+                <MenuItem value='first_name'>First Name</MenuItem>
+                <MenuItem value='last_name'>Last Name</MenuItem>
+              </Select>
+            </FormControl>
+          </Box>
+          <Button onClick={handleSortOrder}>
+            <FontAwesomeIcon icon="filter" />
+          </Button>
+        </S.FilterContainer>
       </div>
       <div>
         <TextField id="search-bar"
@@ -167,4 +169,7 @@ const S = {
       border-radius: ${BorderRadius.default};
     }
   `,
+  FilterContainer: styled.div`
+    display: flex;
+  `
 }
